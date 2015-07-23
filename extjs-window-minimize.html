@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Extjs window minimize</title>
+<link rel="stylesheet" type="text/css" href="http://dev.sencha.com/ext/5.1.0/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all-debug.css">
+<link rel="stylesheet" type="text/css" href="http://dev.sencha.com/ext/5.1.0/packages/sencha-charts/build/crisp/resources/sencha-charts-all-debug.css">
+<script type="text/javascript" src="http://dev.sencha.com/ext/5.1.0/ext-all.js"></script>
+<script type="text/javascript" src="http://dev.sencha.com/ext/5.1.0/packages/ext-theme-crisp/build/ext-theme-crisp.js" defer=""></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+Ext.define('example', {
+    extend: 'Ext.window.Window',
+	alias:'widget.example',
+    title: 'Header',
+    width: 400,
+    height: 200,
+	minWidth:150,
+	maximizable : true,
+	tools:[{
+	    type:'minimize',
+	    // hidden:true,
+	    callback: function(window, tool, event) {
+	    			var windows= Ext.ComponentQuery.query('example');
+					window.restore();//toggle Maximize
+					window.toggleCollapse();//toggle Collapse
+					if(window.getCollapsed()){
+						tool.setType('restore');//change tool button icon
+						var  bodyWidth=screen.width;
+						var windowMinWidth=window.getMinWidth();//extjs 5.x
+						var headerHeight=window.getHeader().getHeight();
+						var maxLineCount=Math.floor(bodyWidth/windowMinWidth);//count width of screen  
+						window.setWidth(windowMinWidth);
+						Ext.Array.each(windows,function(item,index,itSelf){
+							if(item.getCollapsed()){
+								var line=Math.floor(index/maxLineCount);
+								var column=index%maxLineCount;
+								item.alignTo(Ext.getBody(),'bl-bl',[windowMinWidth*column,headerHeight*line*(-1)]);//array all window
+							}
+						});
+					}else{
+						tool.setType('minimize');
+						window.setWidth(400);//restore width
+						window.center();
+					}
+	    }
+		}]
+});
+Ext.create('Ext.Button', {
+    text: 'Click me',
+    renderTo: Ext.getBody(),
+    handler: function() {
+	Ext.create('example').show();
+	}
+	});
+});
+</script>
+</head>
+<body>
+</body>
+</html>
